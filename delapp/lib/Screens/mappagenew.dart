@@ -1,17 +1,20 @@
-// ignore_for_file: avoid_unnecessary_containers, no_leading_underscores_for_local_identifiers, prefer_interpolation_to_compose_strings
+// ignore_for_file: avoid_unnecessary_containers, no_leading_underscores_for_local_identifiers, prefer_interpolation_to_compose_strings, use_build_context_synchronously
 
 import 'dart:convert';
 
+import 'package:delapp/Screens/bottomBar.dart';
 import 'package:delapp/Screens/cards.dart';
 import 'package:delapp/Screens/deliveredModel.dart';
 import 'package:delapp/Screens/initFucntions.dart';
 import 'package:delapp/Screens/kkn.dart';
+import 'package:delapp/main.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 // import 'package:mapapi/pages/map.dart';
 
-class CourseScreen extends StatelessWidget {
+class CourseScreen extends StatefulWidget {
   final String courseName;
   final String courseInfo;
   final String coursePrice;
@@ -23,6 +26,12 @@ class CourseScreen extends StatelessWidget {
       required this.coursePrice})
       : super(key: key);
 
+  @override
+  State<CourseScreen> createState() => _CourseScreenState();
+}
+
+class _CourseScreenState extends State<CourseScreen> {
+  @override
   @override
   Widget build(BuildContext context) {
     final TextEditingController _otpController = TextEditingController();
@@ -69,10 +78,10 @@ class CourseScreen extends StatelessWidget {
                         ),
                       ),
                       MyTheme.mediumVerticalPadding,
-                      Text(courseName,
+                      Text(widget.courseName,
                           style: const TextStyle(
                               fontSize: 25, fontWeight: FontWeight.bold)),
-                      Text(courseInfo,
+                      Text(widget.courseInfo,
                           style: TextStyle(fontSize: 20, color: MyTheme.grey)),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,18 +96,18 @@ class CourseScreen extends StatelessWidget {
                           ),
                           Container(
                             child: Text(
-                              coursePrice.substring(0, 45),
+                              widget.coursePrice,
                               style: const TextStyle(fontSize: 14),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          Text(
-                            coursePrice.substring(
-                              45,
-                            ),
-                            style: const TextStyle(fontSize: 14),
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          // Text(
+                          //   coursePrice.substring(
+                          //     45,
+                          //   ),
+                          //   style: const TextStyle(fontSize: 14),
+                          //   overflow: TextOverflow.ellipsis,
+                          // ),
                           const SizedBox(
                             height: 14,
                           ),
@@ -128,9 +137,26 @@ class CourseScreen extends StatelessWidget {
                                                   String otp =
                                                       _otpController.text;
                                                   await delivered(otp);
+
+                                                  // await Navigator.of(context)
+                                                  //     .pushReplacement(
+                                                  //         MaterialPageRoute(
+                                                  //             builder: (context) =>
+                                                  //                 const bottomBar()));
+                                                  // await Navigator.push(
+                                                  //         context,
+                                                  //         CupertinoPageRoute(
+                                                  //           builder: (context) =>
+                                                  //               const MyApp(),
+                                                  //         ))
+                                                  //     .then((_) =>
+                                                  //         setState(() async {
+                                                  //           await getDeliveryBoyDetails();
+                                                  //           await getRoundDetails();
+                                                  //         }));
                                                   // print("Name entered: $name");
-                                                  // ignore: use_build_context_synchronously
                                                   Navigator.of(context).pop();
+                                                  // setState(() {});
                                                 },
                                               ),
                                               ElevatedButton(

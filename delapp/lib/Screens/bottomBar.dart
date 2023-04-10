@@ -27,6 +27,17 @@ class _bottomBarState extends State<bottomBar> {
     }
   }
 
+  // @override
+  // void initState() {
+  //   initFunctions();
+  //   super.initState();
+  // }
+
+  // initFunctions() async {
+  //   await getDeliveryBoyDetails();
+  //   await getRoundDetails();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

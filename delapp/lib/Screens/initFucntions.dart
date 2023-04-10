@@ -28,6 +28,10 @@ var currentRoundDetails = [];
 // }
 
 getRoundDetails() async {
+  OrderLocation.clear();
+  OrderLocationList.clear();
+  currentOrderDetails = null;
+  currentRoundDetails.clear();
   final prefs = await SharedPreferences.getInstance();
 // if (!prefs.containsKey('token')) {
 //   return false;
@@ -41,33 +45,36 @@ getRoundDetails() async {
       });
   // return response.body;
   var jsonData = jsonDecode(response.body);
-  // print(jsonData);
-  for (var i in jsonData) {
-    if (i["orderId"] != currentOrder) {
-      currentRoundDetails.add(i);
+  // print(jsonData.runtimeType);
+  if (jsonData.runtimeType == List<dynamic>) {
+    for (var i in jsonData) {
+      print(jsonData.runtimeType);
+      if (i["orderId"] != currentOrder) {
+        currentRoundDetails.add(i);
+      }
     }
   }
 
-  // if(jsonData.runtimeType == ){
-  for (var i in jsonData) {
-    var k = [i['location']["lat"], i['location']["long"]];
-    var h = "${i['location']["lat"]},${i['location']["long"]}";
-    if (i["orderId"] == currentOrder) {
-      currentOrderDetails = i;
+  if (jsonData.runtimeType == List<dynamic>) {
+    for (var i in jsonData) {
+      var k = [i['location']["lat"], i['location']["long"]];
+      var h = "${i['location']["lat"]},${i['location']["long"]}";
+      if (i["orderId"] == currentOrder) {
+        currentOrderDetails = i;
+      }
+      OrderLocation.add(h);
+      OrderLocationList.add(k);
     }
-    OrderLocation.add(h);
-    OrderLocationList.add(k);
+    // print(OrderLocation);
+    print(currentRoundDetails);
+    return [
+      OrderLocation,
+      OrderLocationList,
+      currentOrderDetails,
+      currentRoundDetails
+    ];
   }
-  // print(OrderLocation);
-  print(currentRoundDetails);
-  return [
-    OrderLocation,
-    OrderLocationList,
-    currentOrderDetails,
-    currentRoundDetails
-  ];
 }
-// }
 
 getDeliveryBoyDetails() async {
   final prefs = await SharedPreferences.getInstance();
@@ -105,7 +112,7 @@ getDeliveryBoyDetails() async {
   currentOrder = jsonData['currentOrder'];
   origin_text = "${origin['long']},${origin['lat']}";
   print(origin_text);
-
+  print(currentOrder);
   return [
     name,
     phone,
