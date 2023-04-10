@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers, no_leading_underscores_for_local_identifiers, prefer_interpolation_to_compose_strings, use_build_context_synchronously, non_constant_identifier_names
 
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:delapp/Screens/cards.dart';
 import 'package:delapp/Screens/deliveredModel.dart';
 import 'package:delapp/Screens/initFucntions.dart';
@@ -9,12 +10,9 @@ import 'package:flutter/material.dart';
 // import 'package:mapapi/pages/map.dart';
 
 class CourseScreen extends StatefulWidget {
-
-
-  const CourseScreen(
-      {Key? key,
-     })
-      : super(key: key);
+  const CourseScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<CourseScreen> createState() => _CourseScreenState();
@@ -31,9 +29,8 @@ class _CourseScreenState extends State<CourseScreen> {
       appBar: AppBar(
         title: const Text('Current Orders'),
       ),
-      body: jsonData.containsKey("message")
-          ? const Center(child: Text("No Current Orders"))
-          : Stack(
+      body: jsonData.runtimeType == List
+          ? Stack(
               children: [
                 // ignore: prefer_const_literals_to_create_immutables
                 Column(children: [
@@ -128,9 +125,24 @@ class _CourseScreenState extends State<CourseScreen> {
                                                       onPressed: () async {
                                                         String otp =
                                                             _otpController.text;
-                                                        await delivered(otp);
+                                                        var p = await delivered(
+                                                            otp);
                                                         Navigator.of(context)
                                                             .pop();
+                                                        if (p["delivered"] ==
+                                                            true) {
+                                                          ScaffoldMessenger.of(
+                                                              context)
+                                                            ..hideCurrentSnackBar()
+                                                            ..showSnackBar(
+                                                                snackBar);
+                                                        } else {
+                                                          ScaffoldMessenger.of(
+                                                              context)
+                                                            ..hideCurrentSnackBar()
+                                                            ..showSnackBar(
+                                                                WrongsnackBar);
+                                                        }
                                                       },
                                                     ),
                                                     ElevatedButton(
@@ -242,7 +254,8 @@ class _CourseScreenState extends State<CourseScreen> {
                   },
                 ),
               ],
-            ),
+            )
+          : const Center(child: Text("No Current Orders")),
     );
   }
 }
@@ -289,3 +302,25 @@ class MyTheme {
         ),
       );
 }
+
+final snackBar = SnackBar(
+  elevation: 0,
+  behavior: SnackBarBehavior.floating,
+  backgroundColor: Colors.transparent,
+  content: AwesomeSnackbarContent(
+    title: 'Delivery Completed Successfully!',
+    message: 'Kindly Refresh the page to go to the next order.',
+    contentType: ContentType.success,
+  ),
+);
+
+final WrongsnackBar = SnackBar(
+  elevation: 0,
+  behavior: SnackBarBehavior.floating,
+  backgroundColor: Colors.transparent,
+  content: AwesomeSnackbarContent(
+    title: 'Incorrect OTP!',
+    message: 'Kindly enter the correct OTP.',
+    contentType: ContentType.failure,
+  ),
+);

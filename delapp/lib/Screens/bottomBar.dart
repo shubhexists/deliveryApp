@@ -1,5 +1,4 @@
 // ignore_for_file: file_names, camel_case_types
-import 'package:delapp/Screens/initFucntions.dart';
 import 'package:delapp/Screens/mappagenew.dart';
 import 'package:delapp/Screens/profilePage.dart';
 import 'package:flutter/material.dart';
