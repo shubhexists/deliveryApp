@@ -18,6 +18,7 @@ var OrderLocation = [origin_text];
 var OrderLocationList = [];
 var currentOrderDetails;
 var currentRoundDetails = [];
+var jsonData;
 
 // getRoundTripDistance(List<LatLng> points) {
 //   double distance = 0;
@@ -44,11 +45,13 @@ getRoundDetails() async {
         'token': token_check.toString(),
       });
   // return response.body;
-  var jsonData = jsonDecode(response.body);
+
+  jsonData = jsonDecode(response.body);
   // print(jsonData.runtimeType);
+  print(jsonData);
   if (jsonData.runtimeType == List<dynamic>) {
     for (var i in jsonData) {
-      print(jsonData.runtimeType);
+      // print(jsonData.runtimeType);
       if (i["orderId"] != currentOrder) {
         currentRoundDetails.add(i);
       }
@@ -68,6 +71,7 @@ getRoundDetails() async {
     // print(OrderLocation);
     print(currentRoundDetails);
     return [
+      jsonData,
       OrderLocation,
       OrderLocationList,
       currentOrderDetails,

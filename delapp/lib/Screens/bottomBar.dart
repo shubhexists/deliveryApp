@@ -1,7 +1,6 @@
 // ignore_for_file: file_names, camel_case_types
 import 'package:delapp/Screens/initFucntions.dart';
 import 'package:delapp/Screens/mappagenew.dart';
-import 'package:delapp/Screens/pastorders.dart';
 import 'package:delapp/Screens/profilePage.dart';
 import 'package:flutter/material.dart';
 
@@ -16,27 +15,14 @@ class _bottomBarState extends State<bottomBar> {
   int currentIndex = 0;
   chooseBody() {
     if (currentIndex == 0) {
-      return CourseScreen(
-          courseName: 'Current Order',
-          courseInfo: currentOrderDetails["orderedByName"].toString(),
-          coursePrice: currentOrderDetails["deliverAt"].toString());
-    } else if (currentIndex == 1) {
-      return const PastOrdersPage();
+      return const CourseScreen();
+
+      // } else if (currentIndex == 1) {
+      //   return const PastOrdersPage();
     } else {
       return const MyHomePage(title: '');
     }
   }
-
-  // @override
-  // void initState() {
-  //   initFunctions();
-  //   super.initState();
-  // }
-
-  // initFunctions() async {
-  //   await getDeliveryBoyDetails();
-  //   await getRoundDetails();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -51,10 +37,10 @@ class _bottomBarState extends State<bottomBar> {
               icon: Icon(Icons.shopping_cart_outlined),
               label: 'Current Orders',
               backgroundColor: Colors.blue),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.delivery_dining_outlined),
-              label: 'Past Orders',
-              backgroundColor: Colors.blue),
+          // const BottomNavigationBarItem(
+          //     icon: Icon(Icons.delivery_dining_outlined),
+          //     label: 'Past Orders',
+          //     backgroundColor: Colors.blue),
           const BottomNavigationBarItem(
               icon: Icon(Icons.man_outlined),
               label: 'Profile',
