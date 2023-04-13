@@ -1,8 +1,13 @@
 // ignore_for_file: file_names, non_constant_identifier_names, unused_local_variable, avoid_print, prefer_typing_uninitialized_variables, prefer_is_empty
 import 'dart:convert';
 
+import 'package:delapp/Screens/mapRountApi.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import "package:http/http.dart" as http;
+import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 var name;
 var phone;
@@ -19,7 +24,13 @@ var OrderLocationList = [];
 var currentOrderDetails;
 var currentRoundDetails = [];
 var jsonData;
-
+List VendorLocationList = [];
+List Markers = [];
+var FinalLocationList = [origin_text];
+var vendorKiLocation;
+List listOfPoints = [];
+List<LatLng> points = [];
+List FinalPoints = [];
 // getRoundTripDistance(List<LatLng> points) {
 //   double distance = 0;
 //   for (int i = 0; i < points.length - 1; i++) {
@@ -65,12 +76,38 @@ getRoundDetails() async {
       if (i["orderId"] == currentOrder) {
         currentOrderDetails = i;
       }
+      print(currentOrderDetails);
       OrderLocation.add(h);
       OrderLocationList.add(k);
+      FinalLocationList.add(h);
     }
-    // print(OrderLocation);
+    print(OrderLocation);
+    print(OrderLocationList);
+    print(FinalLocationList);
     print(currentRoundDetails);
+    for (var i in OrderLocationList) {
+      Markers.add(Marker(
+        point: LatLng(i[0], i[1]),
+        width: 80,
+        height: 80,
+        builder: ((context) => IconButton(
+              onPressed: () async {
+                var url =
+                    'https://www.google.com/maps/search/?api=1&query=${i[0]},${i[1]}';
+                if (await canLaunchUrl(Uri.parse(url))) {
+                  await launchUrl(Uri.parse(url));
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
+              icon: const Icon(Icons.location_on),
+              color: Colors.blue,
+              iconSize: 50,
+            )),
+      ));
+    }
     return [
+      Markers,
       jsonData,
       OrderLocation,
       OrderLocationList,
@@ -112,12 +149,20 @@ getDeliveryBoyDetails() async {
   } else {
     Star = "★★★★★";
   }
+  print(origin["lat"].runtimeType);
+  VendorLocationList.add([origin["lat"], origin["long"]]);
+  vendorKiLocation = [origin["long"], origin["lat"]];
   vendor = jsonData['vendor'].toString();
+  print(VendorLocationList);
   currentOrder = jsonData['currentOrder'];
   origin_text = "${origin['long']},${origin['lat']}";
   print(origin_text);
   print(currentOrder);
+
+  // print(Markers.length);
   return [
+    VendorLocationList,
+    vendorKiLocation,
     name,
     phone,
     totalDeliveries,
@@ -133,3 +178,46 @@ getDeliveryBoyDetails() async {
 
 // {"user":"isha","phone":9549964210,"totalDeliveries":0,"onTimeDelivery":0,"avgRating":0,"vendor":"shubham2","currentRound":7,"currentOrder":9}
 // [{"orderId":9,"orderedByName":"Shubham Singh","amount":130,"deliverAt":"S-144,  Some Address, Near  Near Aggarwal,  Delhi,  Delhi-110092"}]
+getCoordinates(a, b) async {
+  // Requesting for openrouteservice api
+  var response = await http.get(getRouteUrl(a, b));
+
+  if (response.statusCode == 200) {
+    var data = jsonDecode(response.body);
+    var listOfPoints = data['features'][0]['geometry']['coordinates'];
+    points = listOfPoints
+        .map((p) => LatLng(p[1].toDouble(), p[0].toDouble()))
+        .toList();
+  }
+  print(points);
+  return points;
+}
+
+// EntireRoute() async {
+//   for (var i = 0; i < FinalLocationList.length - 1; i++) {
+//     var a =
+//         await getCoordinates(FinalLocationList[i], FinalLocationList[i + 1]);
+//     for (var i in a) {
+//       FinalPoints.add(a);
+//     }
+//   }
+//   print(FinalPoints);
+//   return FinalPoints;
+// }
+
+cancelOrder(reason) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token_check = prefs.getString('token');
+  var response = await http.post(
+    Uri.parse('http://156.67.219.185:8000/api/delivery/cancelOrder'),
+    headers: {
+      'token': token_check.toString(),
+    },
+    body: {
+      'orderId': currentOrder,
+      "reason": reason.toString(),
+    },
+  );
+  var jsonData = jsonDecode(response.body);
+  return jsonData;
+}

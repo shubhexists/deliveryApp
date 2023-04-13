@@ -3,7 +3,6 @@
 import 'package:delapp/Screens/bottomBar.dart';
 import 'package:delapp/Screens/initFucntions.dart';
 import 'package:delapp/Screens/loginPage.dart';
-import 'package:delapp/Screens/map.dart';
 import 'package:flutter/material.dart';
 // import 'package:mapapi/models/kkn.dart';
 // import 'package:mapapi/pages/MapPage/mappagenew.dart';
@@ -21,8 +20,8 @@ void main() async {
     await tryautologin();
     await getDeliveryBoyDetails();
     await getRoundDetails();
+    await getCoordinates("", "");
   }
-  await MapMyIndiaAuth();
   runApp(const MyApp());
 }
 

@@ -29,8 +29,6 @@ login(BuildContext context, String email, password) async {
         Uri.parse('http://156.67.219.185:8000/api/delivery/login'),
         body: {'user': email, 'password': password});
     if (response.statusCode != 201) {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const bottomBar()));
       var data = jsonDecode(response.body.toString());
       var token = data;
       print(token);
@@ -38,6 +36,8 @@ login(BuildContext context, String email, password) async {
       prefs.setString('token', token['token'].toString());
       await getDeliveryBoyDetails();
       await getRoundDetails();
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const bottomBar()));
       return prefs;
     } else if (response.statusCode == 201) {
       await Navigator.of(context).pushReplacement(

@@ -4,8 +4,9 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:delapp/Screens/cards.dart';
 import 'package:delapp/Screens/deliveredModel.dart';
 import 'package:delapp/Screens/initFucntions.dart';
-import 'package:delapp/Screens/kkn.dart';
+import 'package:delapp/Screens/mapScreen2.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // import 'package:mapapi/pages/map.dart';
 
@@ -24,6 +25,15 @@ class _CourseScreenState extends State<CourseScreen> {
   Widget build(BuildContext context) {
     final TextEditingController _otpController = TextEditingController();
     final TextEditingController _NoteController = TextEditingController();
+    _launchURL(lat, long) async {
+      var url = 'https://www.google.com/maps/search/?api=1&query=$lat,$long';
+      if (await canLaunchUrl(Uri.parse(url))) {
+        await launchUrl(Uri.parse(url));
+      } else {
+        throw 'Could not launch $url';
+      }
+    }
+
     return Scaffold(
       backgroundColor: MyTheme.courseCardColor,
       appBar: AppBar(
@@ -34,9 +44,25 @@ class _CourseScreenState extends State<CourseScreen> {
               children: [
                 // ignore: prefer_const_literals_to_create_immutables
                 Column(children: [
-                  const Expanded(
+                  TextButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromARGB(255, 249, 168, 37))),
+                      onPressed: () {
+                        _launchURL(currentOrderDetails["location"]["lat"],
+                            currentOrderDetails["location"]["long"]);
+                      },
+                      child: const Text("Get Direction For Current Order")),
+                  Expanded(
                     flex: 100,
-                    child: Center(child: POIAlongRouteWidget()),
+                    child: Center(
+                        child: GestureDetector(
+                      child: const MapScreen2(),
+                      onTap: () {
+                        // _launchURL(jsonData["location"]["lat"],
+                        //     jsonData["location"]["long"]);
+                      },
+                    )),
                   ),
                   const Spacer(
                     flex: 65,
@@ -186,12 +212,16 @@ class _CourseScreenState extends State<CourseScreen> {
                                                       child:
                                                           const Text("Submit"),
                                                       onPressed: () async {
-                                                        // String otp =
-                                                        //     _otpController.text;
-                                                        // await delivered(otp);
-                                                        // print("Name entered: $name");
+                                                        await cancelOrder(
+                                                            _NoteController
+                                                                .text);
                                                         Navigator.of(context)
                                                             .pop();
+                                                        ScaffoldMessenger.of(
+                                                            context)
+                                                          ..hideCurrentSnackBar()
+                                                          ..showSnackBar(
+                                                              snackBar);
                                                       },
                                                     ),
                                                     ElevatedButton(
