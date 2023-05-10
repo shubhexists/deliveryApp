@@ -1,4 +1,5 @@
 // ignore_for_file: file_names, unused_element
+import 'package:delapp/Screens/initFucntions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const String baseUrl =
@@ -11,7 +12,8 @@ getRouteUrl(String startPoint, String endPoint) {
 }
 
 _launchURL(lat, long) async {
-  var url = 'https://www.google.com/maps/search/?api=1&query=$lat,$long';
+  var url =
+      'https://www.google.com/maps/dir/?api=1&origin=${origin["long"]},${origin["lat"]}&destination=28.62479,77.298767&waypoints=28.6249,77.300001|28.627,77.303 ';
   if (await canLaunchUrl(Uri.parse(url))) {
     await launchUrl(Uri.parse(url));
   } else {

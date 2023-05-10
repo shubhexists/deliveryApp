@@ -26,7 +26,8 @@ class _CourseScreenState extends State<CourseScreen> {
     final TextEditingController _otpController = TextEditingController();
     final TextEditingController _NoteController = TextEditingController();
     _launchURL(lat, long) async {
-      var url = 'https://www.google.com/maps/search/?api=1&query=$lat,$long';
+      var url =
+          'https://www.google.com/maps/dir/?api=1&origin=${origin["long"]},${origin["lat"]}&destination=${OrderLocationList.last[0]},${OrderLocationList.last[1]}&waypoints=28.6249,77.300001|28.627,77.303';
       if (await canLaunchUrl(Uri.parse(url))) {
         await launchUrl(Uri.parse(url));
       } else {
