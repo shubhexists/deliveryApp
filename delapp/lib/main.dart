@@ -20,7 +20,7 @@ void main() async {
     await tryautologin();
     await getDeliveryBoyDetails();
     await getRoundDetails();
-    await getCoordinates("", "");
+    // await getCoordinates(origin['long'], origin['lat']);
   }
   runApp(const MyApp());
 }
@@ -32,6 +32,7 @@ Future<void> tryautologin() async {
   if (token_check != null) {
     _defaultHome = const bottomBar();
     _token = token_check;
+    print(token_check);
     return _token;
   }
 }

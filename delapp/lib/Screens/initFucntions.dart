@@ -1,4 +1,5 @@
-// ignore_for_file: file_names, non_constant_identifier_names, unused_local_variable, avoid_print, prefer_typing_uninitialized_variables, prefer_is_empty
+// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables, avoid_print, file_names
+
 import 'dart:convert';
 
 import 'package:delapp/Screens/mapRountApi.dart';
@@ -9,6 +10,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+String mapurl = "";
 var name;
 var phone;
 var totalDeliveries;
@@ -31,13 +33,6 @@ var vendorKiLocation;
 List listOfPoints = [];
 List<LatLng> points = [];
 List FinalPoints = [];
-// getRoundTripDistance(List<LatLng> points) {
-//   double distance = 0;
-//   for (int i = 0; i < points.length - 1; i++) {
-//     distance += getRoundTripDistance([points[i], points[i + 1]]);
-//   }
-//   return distance;
-// }
 
 getRoundDetails() async {
   OrderLocation.clear();
@@ -45,9 +40,7 @@ getRoundDetails() async {
   currentOrderDetails = null;
   currentRoundDetails.clear();
   final prefs = await SharedPreferences.getInstance();
-// if (!prefs.containsKey('token')) {
-//   return false;
-//   }
+
   final token_check = prefs.getString('token');
   var response = await http.get(
       Uri.parse('http://156.67.219.185:8000/api/delivery/getCurrentRound'),
@@ -55,14 +48,12 @@ getRoundDetails() async {
         'Content-Type': 'application/json',
         'token': token_check.toString(),
       });
-  // return response.body;
 
   jsonData = jsonDecode(response.body);
-  // print(jsonData.runtimeType);
+
   print(jsonData);
   if (jsonData.runtimeType == List<dynamic>) {
     for (var i in jsonData) {
-      // print(jsonData.runtimeType);
       if (i["orderId"] != currentOrder) {
         currentRoundDetails.add(i);
       }
@@ -73,15 +64,20 @@ getRoundDetails() async {
     for (var i in jsonData) {
       var k = [i['location']["lat"], i['location']["long"]];
       var h = "${i['location']["lat"]},${i['location']["long"]}";
+      mapurl += "$h|";
       if (i["orderId"] == currentOrder) {
         currentOrderDetails = i;
       }
+
       print(currentOrderDetails);
+
       OrderLocation.add(h);
       OrderLocationList.add(k);
       FinalLocationList.add(h);
     }
+    print(currentOrderDetails);
     print(OrderLocation);
+    print(mapurl);
     print(OrderLocationList);
     print(FinalLocationList);
     print(currentRoundDetails);
@@ -106,8 +102,10 @@ getRoundDetails() async {
             )),
       ));
     }
+    print(currentOrderDetails);
     return [
       Markers,
+      mapurl,
       jsonData,
       OrderLocation,
       OrderLocationList,
@@ -126,7 +124,7 @@ getDeliveryBoyDetails() async {
         'Content-Type': 'application/json',
         'token': token_check.toString(),
       });
-  // return response.body;
+
   print(response.body);
   var jsonData = jsonDecode(response.body);
   print(jsonData);
@@ -159,7 +157,6 @@ getDeliveryBoyDetails() async {
   print(origin_text);
   print(currentOrder);
 
-  // print(Markers.length);
   return [
     VendorLocationList,
     vendorKiLocation,
@@ -176,10 +173,7 @@ getDeliveryBoyDetails() async {
   ];
 }
 
-// {"user":"isha","phone":9549964210,"totalDeliveries":0,"onTimeDelivery":0,"avgRating":0,"vendor":"shubham2","currentRound":7,"currentOrder":9}
-// [{"orderId":9,"orderedByName":"Shubham Singh","amount":130,"deliverAt":"S-144,  Some Address, Near  Near Aggarwal,  Delhi,  Delhi-110092"}]
 getCoordinates(a, b) async {
-  // Requesting for openrouteservice api
   var response = await http.get(getRouteUrl(a, b));
 
   if (response.statusCode == 200) {
@@ -192,18 +186,6 @@ getCoordinates(a, b) async {
   print(points);
   return points;
 }
-
-// EntireRoute() async {
-//   for (var i = 0; i < FinalLocationList.length - 1; i++) {
-//     var a =
-//         await getCoordinates(FinalLocationList[i], FinalLocationList[i + 1]);
-//     for (var i in a) {
-//       FinalPoints.add(a);
-//     }
-//   }
-//   print(FinalPoints);
-//   return FinalPoints;
-// }
 
 cancelOrder(reason) async {
   final prefs = await SharedPreferences.getInstance();

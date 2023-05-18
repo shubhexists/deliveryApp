@@ -1,4 +1,6 @@
-// ignore_for_file: avoid_unnecessary_containers, no_leading_underscores_for_local_identifiers, prefer_interpolation_to_compose_strings, use_build_context_synchronously, non_constant_identifier_names
+// ignore_for_file: avoid_unnecessary_containers, no_leading_underscores_for_local_identifiers, prefer_interpolation_to_compose_strings, use_build_context_synchronously, non_constant_identifier_names, unused_local_variable
+
+import 'dart:convert';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:delapp/Screens/cards.dart';
@@ -6,9 +8,9 @@ import 'package:delapp/Screens/deliveredModel.dart';
 import 'package:delapp/Screens/initFucntions.dart';
 import 'package:delapp/Screens/mapScreen2.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-// import 'package:mapapi/pages/map.dart';
+import 'package:http/http.dart' as http;
 
 class CourseScreen extends StatefulWidget {
   const CourseScreen({
@@ -27,7 +29,7 @@ class _CourseScreenState extends State<CourseScreen> {
     final TextEditingController _NoteController = TextEditingController();
     _launchURL(lat, long) async {
       var url =
-          'https://www.google.com/maps/dir/?api=1&origin=${origin["long"]},${origin["lat"]}&destination=${OrderLocationList.last[0]},${OrderLocationList.last[1]}&waypoints=28.6249,77.300001|28.627,77.303';
+          'https://www.google.com/maps/dir/?api=1&origin=${origin["long"]},${origin["lat"]}&destination=${OrderLocationList.last[0]},${OrderLocationList.last[1]}&waypoints=$mapurl';
       if (await canLaunchUrl(Uri.parse(url))) {
         await launchUrl(Uri.parse(url));
       } else {
@@ -272,7 +274,33 @@ class _CourseScreenState extends State<CourseScreen> {
                                                   currentRoundDetails[index]
                                                           ["deliverAt"]
                                                       .toString(),
-                                              onPressed: () {});
+                                              onPressed: () async {
+                                                final prefs =
+                                                    await SharedPreferences
+                                                        .getInstance();
+                                                final token_check =
+                                                    prefs.getString('token');
+                                                print(currentRoundDetails[index]
+                                                    ["orderId"]);
+                                                var response = await http.post(
+                                                    Uri.parse(
+                                                        "http://156.67.219.185:8000/api/delivery/setCurrentOrder"),
+                                                    body: jsonEncode({
+                                                      "orderId":
+                                                          currentRoundDetails[
+                                                              index]["orderId"],
+                                                    }),
+                                                    headers: {
+                                                      'Content-Type':
+                                                          'application/json',
+                                                      "token":
+                                                          token_check.toString()
+                                                    });
+                                                print(response.body);
+                                                ScaffoldMessenger.of(context)
+                                                  ..hideCurrentSnackBar()
+                                                  ..showSnackBar(DonesnackBar);
+                                              });
                                         }),
                                   )
                                 ])
@@ -353,5 +381,16 @@ final WrongsnackBar = SnackBar(
     title: 'Incorrect OTP!',
     message: 'Kindly enter the correct OTP.',
     contentType: ContentType.failure,
+  ),
+);
+
+final DonesnackBar = SnackBar(
+  elevation: 0,
+  behavior: SnackBarBehavior.floating,
+  backgroundColor: Colors.transparent,
+  content: AwesomeSnackbarContent(
+    title: 'Current Order Changed Successfully!',
+    message: 'Kindly Refresh the page to go to the next order.',
+    contentType: ContentType.success,
   ),
 );

@@ -9,7 +9,7 @@
         </intent>
     </queries>
    <application
-        android:label="delapp"
+        android:label="CartOut - Delivery"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
